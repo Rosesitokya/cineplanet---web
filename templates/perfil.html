@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Mi Perfil - Cineplanet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <style>
+        .perfil-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        .seccion-perfil { margin-bottom: 40px; }
+        .seccion-perfil h3 { font-size: 22px; margin-bottom: 15px; color: #ffd500; border-bottom: 1px solid #1a2a47; padding-bottom: 10px; }
+        .grid-historial { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
+        .card-item { background: #1a2a47; padding: 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        .pin-locker { font-size: 28px; font-weight: 900; color: #ffd500; letter-spacing: 4px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo" onclick="window.location.href='/'">cineplanet</div>
+            <ul class="nav-links">
+                <li onclick="window.location.href='/'">Cartelera</li>
+                <li onclick="window.location.href='{{ url_for('cines') }}'">Cines</li>
+                <li onclick="window.location.href='{{ url_for('promociones') }}'">Promociones</li>
+                <li onclick="window.location.href='{{ url_for('socio') }}'">Socio Cineplanet</li>
+                <li onclick="window.location.href='{{ url_for('compra_grupal') }}'">Compra Grupal</li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <span style="font-weight: bold; color: #ffd500;">👤 {{ session['nombre'] }}</span>
+            <button class="btn-login" onclick="window.location.href='{{ url_for('logout') }}'">Cerrar sesión</button>
+        </div>
+    </nav>
+
+    <div class="perfil-container">
+        <h2 style="font-size: 32px; margin-bottom: 20px;">Hola, {{ session['nombre'] }}</h2>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alerta alerta-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <div class="seccion-perfil">
+            <h3>💎 Mi Membresía Socio Cineplanet</h3>
+            {% if plan_actual %}
+            <div class="card-item" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 20px; border-color: {{ info_plan.color }};">
+                <div>
+                    <span class="etiqueta-amarilla">ACTIVA</span>
+                    <h4 style="font-size: 24px; margin: 10px 0 5px; color: {{ info_plan.color }};">Socio {{ plan_actual }}</h4>
+                    <p style="font-size: 13px; color: #a0a5b1;">
+                        Suscripción: S/ {{ "%.2f"|format(info_plan.precio) }}/mes • Pagado con {{ session.get('metodo_socio', 'Yape') }}
+                    </p>
+                    <p style="font-size: 12px; color: #a0a5b1; margin-top: 4px;">
+                        Comprobante: {{ session.get('comprobante_socio', 'Boleta Electrónica') }}
+                    </p>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn-trailer" onclick="window.location.href='{{ url_for('socio') }}'">Ver beneficios</button>
+                    <form method="POST" action="{{ url_for('cancelar_membresia') }}" onsubmit="return confirm('¿Seguro que deseas cancelar tu membresía Socio {{ plan_actual }}?');">
+                        <button type="submit" style="background: #dc2626; color: white; border: none; padding: 12px 18px; border-radius: 6px; font-weight: bold; cursor: pointer;">
+                            Cancelar membresía
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% else %}
+            <div class="card-item" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <p style="color: #a0a5b1;">No tienes una membresía activa en este momento.</p>
+                <button class="btn-comprar" onclick="window.location.href='{{ url_for('socio') }}'">Ver planes Socio ➔</button>
+            </div>
+            {% endif %}
+        </div>
+        
+        <div class="seccion-perfil">
+            <h3>🎫 Mis Entradas Compradas</h3>
+            <div class="grid-historial">
+                {% for e in entradas %}
+                <div class="card-item">
+                    <h4 style="font-size: 18px; margin-bottom: 8px;">{{ e.titulo }}</h4>
+                    <p style="font-size: 13px; color: #a0a5b1;">Duración: {{ e.duracion }} min • {{ e.clasificacion }}</p>
+                    <p style="font-size: 13px; color: #a0a5b1; margin-top: 5px;">Pago: S/ {{ e.monto_total }} ({{ e.metodo_pago }})</p>
+                    <p style="font-size: 12px; color: #51cf66; margin-top: 10px; font-weight: bold;">✓ Transacción #{{ e.id_transaccion }}</p>
+                    <form method="POST" action="{{ url_for('cancelar_entrada', id_carrito=e.id_carrito) }}" style="margin-top: 15px;" onsubmit="return confirm('¿Seguro que deseas cancelar esta entrada?');">
+                        <button type="submit" style="background: rgba(220,38,38,0.2); color: #ff6b6b; border: 1px solid #dc2626; padding: 8px 12px; border-radius: 6px; width: 100%; cursor: pointer; font-weight: bold;">
+                            Cancelar entrada
+                        </button>
+                    </form>
+                </div>
+                {% else %}
+                <p style="color: #a0a5b1;">Aún no tienes entradas compradas.</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="seccion-perfil">
+            <h3>🍿 Mis Pedidos de Dulcería & Smart Lockers</h3>
+            <div class="grid-historial">
+                {% for s in snacks %}
+                <div class="card-item">
+                    <span class="etiqueta-amarilla">{{ s.estado_kds }}</span>
+                    <div class="pin-locker">PIN: {{ s.codigo_apertura }}</div>
+                    <p style="font-size: 13px; color: #a0a5b1;">Tiempo estimado: {{ s.tiempo_preparacion }} min</p>
+                    <p style="font-size: 13px; color: #a0a5b1;">Locker: {{ s.estado_locker }} (Pedido #{{ s.id_pedido }})</p>
+                </div>
+                {% else %}
+                <p style="color: #a0a5b1;">No tienes pedidos de dulcería activos.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

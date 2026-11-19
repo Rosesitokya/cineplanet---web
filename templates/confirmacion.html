@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>¡Compra Exitosa! - Cineplanet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <style>
+        .ticket-box { max-width: 520px; margin: 50px auto; background: #1a2a47; border-radius: 16px; padding: 35px; border: 1px solid rgba(255,213,0,0.3); text-align: center; }
+        .ticket-datos { background: #081225; border-radius: 10px; padding: 20px; margin: 20px 0; text-align: left; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .dato-label { font-size: 11px; color: #a0a5b1; text-transform: uppercase; letter-spacing: 1px; }
+        .dato-valor { font-size: 16px; font-weight: bold; color: #ffffff; margin-top: 3px; }
+        .codigo-ref { font-size: 22px; font-weight: 900; color: #ffd500; letter-spacing: 3px; margin: 15px 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='/'">cineplanet</div>
+        <button class="btn-login" onclick="window.location.href='{{ url_for('perfil') }}'">Ir a Mi Perfil</button>
+    </nav>
+
+    <div class="ticket-box">
+        <span class="etiqueta-amarilla">COMPRA CONFIRMADA</span>
+        <h2 style="margin-top: 15px; font-size: 28px;">¡Disfruta tu película, {{ session['nombre'].split()[0] }}!</h2>
+        
+        <div class="codigo-ref">{{ codigo }}</div>
+
+        <div class="ticket-datos">
+            <div>
+                <div class="dato-label">Película</div>
+                <div class="dato-valor">{{ pelicula.titulo }}</div>
+            </div>
+            <div>
+                <div class="dato-label">Entradas / Pago</div>
+                <div class="dato-valor">{{ total_entradas }} entrada(s) • S/ {{ "%.2f"|format(monto_total) }} ({{ metodo }})</div>
+            </div>
+            <div>
+                <div class="dato-label">Asientos Elegidos</div>
+                <div class="dato-valor" style="color: #ffd500;">{{ asientos }}</div>
+            </div>
+            <div>
+                <div class="dato-label">Dulcería / Smart Locker</div>
+                <div class="dato-valor">
+                    {% if codigo_locker %}
+                        {{ snack_nombre }} (PIN: <span style="color: #ffd500;">{{ codigo_locker }}</span>)
+                    {% else %}
+                        Sin snacks
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('agregar_dulceria', id_carrito=id_carrito) }}" style="margin-bottom: 15px;">
+            <button type="submit" class="btn-comprar" style="width: 100%; justify-content: center;">
+                🍿 Agregar Combo Dulcería + Smart Locker
+            </button>
+        </form>
+
+        <button class="btn-trailer" style="width: 100%;" onclick="window.location.href='{{ url_for('perfil') }}'">
+            Ver mis entradas en Mi Perfil
+        </button>
+    </div>
+</body>
+</html>

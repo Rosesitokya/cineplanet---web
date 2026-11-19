@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ data.titulo }} - Cineplanet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <style>
+        .info-box { max-width: 750px; margin: 50px auto; background: #111d35; padding: 40px; border-radius: 16px; border: 1px solid rgba(255,255,255,0.08); }
+        .info-box h1 { font-size: 34px; font-weight: 900; margin-bottom: 8px; }
+        .info-box p.sub { color: #ffd500; font-size: 14px; font-weight: 600; margin-bottom: 25px; }
+        .info-texto { color: #cbd5e1; line-height: 1.8; white-space: pre-line; margin-bottom: 30px; }
+        .form-info input, .form-info textarea {
+            width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 8px;
+            border: 1px solid #2d3f63; background: #081225; color: #fff; font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='/'">cineplanet</div>
+        <button class="btn-login" onclick="window.location.href='/'">← Volver a Cartelera</button>
+    </nav>
+
+    <div class="info-box">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alerta alerta-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <h1>{{ data.titulo }}</h1>
+        <p class="sub">{{ data.subtitulo }}</p>
+        <div class="info-texto">{{ data.contenido }}</div>
+
+        {% if data.formulario %}
+        <form method="POST" action="{{ url_for('info_pagina', seccion=seccion) }}" class="form-info">
+            <input type="text" name="nombre" placeholder="Tu nombre completo" value="{{ session.get('nombre', '') }}" required>
+            <input type="email" name="correo" placeholder="Tu correo electrónico" required>
+            <textarea name="mensaje" rows="4" placeholder="Escribe aquí el detalle..." required></textarea>
+            <button type="submit" class="btn-comprar">{{ data.boton }}</button>
+        </form>
+        {% endif %}
+    </div>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cineplanet - Cartelera</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo-box" onclick="window.location.href='/'">
+                <span class="logo">cineplanet</span>
+                <div class="logo-barras">
+                    <span style="background:#e11d48;"></span>
+                    <span style="background:#f97316;"></span>
+                    <span style="background:#ffd500;"></span>
+                    <span style="background:#38bdf8;"></span>
+                </div>
+            </div>
+            <ul class="nav-links">
+                <li class="active" onclick="window.location.href='/'">Cartelera</li>
+                <li onclick="window.location.href='{{ url_for('cines') }}'">Cines</li>
+                <li onclick="window.location.href='{{ url_for('promociones') }}'">Promociones</li>
+                <li onclick="window.location.href='{{ url_for('socio') }}'">Socio Cineplanet</li>
+                <li onclick="window.location.href='{{ url_for('compra_grupal') }}'">Compra Grupal</li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <span class="ubicacion">Lima, Perú</span>
+            {% if 'id_cliente' in session %}
+                <button class="btn-comprar" style="padding: 8px 16px; font-size: 13px;" onclick="window.location.href='{{ url_for('perfil') }}'">
+                    👤 {{ session['nombre'].split()[0] }}
+                </button>
+                <button class="btn-registro" onclick="window.location.href='{{ url_for('logout') }}'">Salir</button>
+            {% else %}
+                <button class="btn-registro" onclick="window.location.href='{{ url_for('registro') }}'">Registrarse</button>
+                <button class="btn-login" onclick="window.location.href='{{ url_for('login') }}'">Iniciar sesión</button>
+            {% endif %}
+        </div>
+    </nav>
+
+    <header class="hero-section" style="background-image: linear-gradient(to right, #081225 32%, rgba(8,18,37,0.4) 70%, rgba(8,18,37,0.1) 100%), linear-gradient(to top, #081225 5%, transparent 35%), url('{{ url_for('static', filename='banner_duna.jpg') }}');">
+        <div class="hero-content">
+            <span class="etiqueta-amarilla">EL ESTRENO DE LA SEMANA</span>
+            <h1 class="titulo-pelicula">DUNA<br><span class="subtitulo-duna">PARTE DOS</span></h1>
+            <p class="tagline">El destino se escribe en la arena.</p>
+            <p class="detalles-hero">Ciencia ficción • 2 h 46 min • Mayores de 14 años</p>
+            
+            <div class="botones-hero">
+                <button class="btn-comprar" onclick="window.location.href='{{ url_for('comprar') }}'">Comprar entradas ➔</button>
+                <button class="btn-trailer" onclick="abrirTrailer()">▷ Ver tráiler</button>
+            </div>
+        </div>
+
+        <div class="prime-badge">
+            <span style="font-size: 11px; letter-spacing: 2px;">VÍVELO EN</span>
+            <div style="font-size: 32px; font-weight: 900; line-height: 1;">PRIME</div>
+            <span style="font-size: 9px; letter-spacing: 1px; opacity: 0.8;">MÁS PANTALLA. MÁS EMOCIÓN.</span>
+        </div>
+    </header>
+
+    <main class="cartelera-section">
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; margin-bottom: 25px;">
+            <div>
+                <p style="font-size: 11px; font-weight: 700; color: #1e3a76; letter-spacing: 1.5px; margin-bottom: 5px;">TU PRÓXIMA GRAN HISTORIA</p>
+                <h2 class="titulo-seccion" style="margin-bottom: 0;">Hoy se vive en el cine.</h2>
+            </div>
+            <div style="display: flex; gap: 25px; font-size: 15px; font-weight: 700;">
+                <span id="tab-cartelera" onclick="cambiarTab('cartelera')" style="cursor: pointer; color: #0b1e4a; border-bottom: 3px solid #0b1e4a; padding-bottom: 6px;">En cartelera</span>
+                <span id="tab-proximamente" onclick="cambiarTab('proximamente')" style="cursor: pointer; color: #888; padding-bottom: 6px;">Próximamente</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; background: #fff; border: 1px solid #e5e7eb; border-radius: 14px; padding: 15px 20px; margin-bottom: 22px; box-shadow: 0 4px 15px rgba(0,0,0,0.04);">
+            <div>
+                <label style="display:block; font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px;">TU CINE</label>
+                <select id="filtroCine" style="width: 100%; border: none; font-size: 15px; font-weight: 600; color: #081225; outline: none; background: transparent; margin-top: 4px; cursor: pointer;">
+                    <option value="Cineplanet San Miguel">Cineplanet San Miguel</option>
+                    <option value="Cineplanet San Martín de Porres">Cineplanet San Martín de Porres</option>
+                    <option value="Cineplanet Salaverry">Cineplanet Salaverry</option>
+                </select>
+            </div>
+            <div style="border-left: 1px solid #eee; padding-left: 15px;">
+                <label style="display:block; font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px;">DÍA</label>
+                <select id="filtroDia" style="width: 100%; border: none; font-size: 15px; font-weight: 600; color: #081225; outline: none; background: transparent; margin-top: 4px; cursor: pointer;">
+                    <option>Hoy, miércoles 18 nov.</option>
+                    <option>Mañana, jueves 19 nov.</option>
+                    <option>Viernes 20 nov.</option>
+                </select>
+            </div>
+            <div style="border-left: 1px solid #eee; padding-left: 15px;">
+                <label style="display:block; font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px;">GÉNERO</label>
+                <select id="filtroGeneroSelect" onchange="filtrarPorGenero(this.value)" style="width: 100%; border: none; font-size: 15px; font-weight: 600; color: #081225; outline: none; background: transparent; margin-top: 4px; cursor: pointer;">
+                    <option value="Todas">Todos los géneros</option>
+                    <option value="Acción">Acción</option>
+                    <option value="Animación">Animación</option>
+                    <option value="Ciencia ficción">Ciencia ficción</option>
+                    <option value="Aventura">Aventura</option>
+                </select>
+            </div>
+            <div style="border-left: 1px solid #eee; padding-left: 15px;">
+                <label style="display:block; font-size: 10px; font-weight: 700; color: #888; letter-spacing: 1px;">FORMATO</label>
+                <select id="filtroFormato" onchange="aplicarFiltros()" style="width: 100%; border: none; font-size: 15px; font-weight: 600; color: #081225; outline: none; background: transparent; margin-top: 4px; cursor: pointer;">
+                    <option value="Todos">Todos los formatos</option>
+                    <option value="2D">2D</option>
+                    <option value="PRIME">PRIME</option>
+                </select>
+            </div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 25px;">
+            <div class="filtros-container" style="margin-bottom: 0;">
+                <button class="filtro-pill active" onclick="filtrarPorGenero('Todas', this)">Todas</button>
+                <button class="filtro-pill" onclick="filtrarPorGenero('Acción', this)">Acción</button>
+                <button class="filtro-pill" onclick="filtrarPorGenero('Animación', this)">Animación</button>
+                <button class="filtro-pill" onclick="filtrarPorGenero('Ciencia ficción', this)">Ciencia ficción</button>
+                <button class="filtro-pill" onclick="filtrarPorGenero('Aventura', this)">Aventura</button>
+            </div>
+            <span id="contadorPelis" style="font-size: 13px; color: #666; font-weight: 600;">5 películas para ti</span>
+        </div>
+
+        <div class="grid-peliculas" id="gridPeliculas">
+            {% for peli in peliculas %}
+            <div class="tarjeta-peli" data-estado="{{ peli.estado }}" data-genero="{{ peli.genero }}" data-formato="{{ peli.formato }}">
+                <div class="poster-container">
+                    <span class="badge-edad">{{ peli.clasificacion }}</span>
+                    {% if peli.etiqueta %}
+                        <span class="badge-tipo" style="{{ 'background:#fff; color:#081225;' if peli.etiqueta == 'FAMILIAR' else '' }}">{{ peli.etiqueta }}</span>
+                    {% endif %}
+                    <img src="{{ url_for('static', filename=peli.imagen) }}" alt="{{ peli.titulo }}" style="width: 100%; height: 100%; object-fit: cover;">
+                </div>
+                
+                <div class="info-peli">
+                    <h3>{{ peli.titulo }}</h3>
+                    <p class="genero-duracion">{{ peli.genero }} • {{ peli.duracion }}</p>
+                    
+                    <div class="horarios-pill-container">
+                        <span class="pill-formato">{{ peli.formato }}</span>
+                        {% for h in peli.horarios[:2] %}
+                            <span class="pill-hora">{{ h }}</span>
+                        {% endfor %}
+                    </div>
+                    
+                    <button class="btn-ver-funciones" onclick="irADetalle({{ peli.id }})">
+                        {{ 'Ver funciones ➔' if peli.estado == 'cartelera' else 'Ver adelanto ➔' }}
+                    </button>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </main>
+
+    <section class="banner-socio">
+        <div class="banner-socio-texto">
+            <span class="socio-kicker">SOCIO CINEPLANET</span>
+            <h2>Tu amor por el cine<br>tiene recompensa.</h2>
+            <p>Acumula puntos y disfruta de beneficios de película.</p>
+        </div>
+
+        <div class="banner-socio-cta">
+            <button class="btn-comprar" style="padding: 15px 28px; font-size: 15px;" onclick="window.location.href='{{ url_for('socio') }}'">
+                Quiero ser socio ➔
+            </button>
+        </div>
+
+        <svg class="arco-cineplanet" viewBox="0 0 320 180" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M20 180 A140 140 0 0 1 300 180" stroke="#e11d48" stroke-width="22"/>
+            <path d="M52 180 A108 108 0 0 1 268 180" stroke="#f97316" stroke-width="22"/>
+            <path d="M84 180 A76 76 0 0 1 236 180" stroke="#ffd500" stroke-width="22"/>
+            <path d="M116 180 A44 44 0 0 1 204 180" stroke="#38bdf8" stroke-width="22"/>
+        </svg>
+    </section>
+
+    <footer class="footer-cineplanet">
+        <div class="footer-col-izq">
+            <div class="logo" onclick="window.location.href='/'">cineplanet</div>
+            <p>El cine nos encuentra.</p>
+        </div>
+
+        <div class="footer-col-centro">
+            <div class="footer-links-fila">
+                <a href="{{ url_for('info_pagina', seccion='nosotros') }}">Nosotros</a>
+                <a href="{{ url_for('info_pagina', seccion='contactanos') }}">Contáctanos</a>
+                <a href="{{ url_for('info_pagina', seccion='faq') }}">Preguntas frecuentes</a>
+            </div>
+            <div class="footer-links-fila">
+                <a href="{{ url_for('info_pagina', seccion='terminos') }}">Términos y condiciones</a>
+                <a href="{{ url_for('info_pagina', seccion='reclamaciones') }}">Libro de reclamaciones</a>
+            </div>
+        </div>
+
+        <div class="footer-col-der">
+            <p>© 2026 Cineplanet</p>
+            <p style="opacity: 0.7; margin-top: 6px;">Hecho para vivir el cine.</p>
+        </div>
+    </footer>
+
+    <div id="modalTrailer" class="modal-trailer" style="display: none;">
+        <div class="modal-contenido">
+            <span class="cerrar-modal" onclick="cerrarTrailer()">&times;</span>
+            <iframe id="videoTrailer" width="100%" height="450" src="https://www.youtube.com/embed/zQ82Xj8L8YQ" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+        </div>
+    </div>
+
+    <script>
+        let tabActual = 'cartelera';
+        let generoActual = 'Todas';
+
+        function cambiarTab(tab) {
+            tabActual = tab;
+            document.getElementById('tab-cartelera').style.borderBottom = tab === 'cartelera' ? '3px solid #0b1e4a' : 'none';
+            document.getElementById('tab-cartelera').style.color = tab === 'cartelera' ? '#0b1e4a' : '#888';
+            document.getElementById('tab-proximamente').style.borderBottom = tab === 'proximamente' ? '3px solid #0b1e4a' : 'none';
+            document.getElementById('tab-proximamente').style.color = tab === 'proximamente' ? '#0b1e4a' : '#888';
+            aplicarFiltros();
+        }
+
+        function filtrarPorGenero(genero, btn) {
+            generoActual = genero;
+            document.getElementById('filtroGeneroSelect').value = genero;
+            document.querySelectorAll('.filtro-pill').forEach(p => {
+                p.classList.toggle('active', p.innerText === genero);
+            });
+            aplicarFiltros();
+        }
+
+        function aplicarFiltros() {
+            const formato = document.getElementById('filtroFormato').value;
+            let visibles = 0;
+            document.querySelectorAll('.tarjeta-peli').forEach(card => {
+                const okTab = card.dataset.estado === tabActual;
+                const okGen = generoActual === 'Todas' || card.dataset.genero === generoActual;
+                const okFor = formato === 'Todos' || card.dataset.formato.includes(formato);
+                if (okTab && okGen && okFor) {
+                    card.style.display = 'flex';
+                    visibles++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            document.getElementById('contadorPelis').innerText = visibles + (visibles === 1 ? ' película para ti' : ' películas para ti');
+        }
+
+        function irADetalle(idPeli) {
+            const cine = encodeURIComponent(document.getElementById('filtroCine').value);
+            window.location.href = `/pelicula/${idPeli}?cine=${cine}`;
+        }
+
+        aplicarFiltros();
+    </script>
+    <!-- Modal Tráiler -->
+    <div id="modalTrailer" class="modal-trailer" style="display: none;">
+        <div class="modal-contenido">
+            <span class="cerrar-modal" onclick="cerrarTrailer()">&times;</span>
+            <iframe id="videoTrailer" width="100%" height="450" 
+                src="https://www.youtube.com/watch?v=ni55SHApxhA" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen>
+            </iframe>
+        </div>
+    </div>
+
+    <script>
+        function abrirTrailer() {
+            document.getElementById('modalTrailer').style.display = 'flex';
+        }
+        function cerrarTrailer() {
+            document.getElementById('modalTrailer').style.display = 'none';
+            var iframe = document.getElementById('videoTrailer');
+            iframe.src = iframe.src;
+        }
+    </script>
+</body>
+</html>

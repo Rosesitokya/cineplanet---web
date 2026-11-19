@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cineplanet - Nuestros Cines</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <style>
+        .grid-cines { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 40px 50px; }
+        .tarjeta-cine { background: #1a2a47; border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.1); }
+        .tarjeta-cine h3 { color: #ffd500; margin-bottom: 10px; font-size: 22px; }
+        .tarjeta-cine p { color: #a0a5b1; font-size: 14px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo" onclick="window.location.href='/'">cineplanet</div>
+            <ul class="nav-links">
+                <li onclick="window.location.href='/'">Cartelera</li>
+                <li class="active" onclick="window.location.href='{{ url_for('cines') }}'">Cines</li>
+                <li onclick="window.location.href='{{ url_for('promociones') }}'">Promociones</li>
+                <li onclick="window.location.href='{{ url_for('socio') }}'">Socio Cineplanet</li>
+                <li onclick="window.location.href='{{ url_for('compra_grupal') }}'">Compra Grupal</li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <span class="ubicacion">Lima, Perú</span>
+            {% if 'id_cliente' in session %}
+                <button class="btn-comprar" style="padding: 8px 16px; font-size: 13px;" onclick="window.location.href='{{ url_for('perfil') }}'">
+                    👤 {{ session['nombre'].split()[0] }}
+                </button>
+                <button class="btn-registro" onclick="window.location.href='{{ url_for('logout') }}'">Salir</button>
+            {% else %}
+                <button class="btn-registro" onclick="window.location.href='{{ url_for('registro') }}'">Registrarse</button>
+                <button class="btn-login" onclick="window.location.href='{{ url_for('login') }}'">Iniciar sesión</button>
+            {% endif %}
+        </div>
+    </nav>
+
+    <h2 style="padding: 40px 50px 0; font-size: 32px;">Nuestros Cines</h2>
+    
+    <div class="grid-cines">
+        <div class="tarjeta-cine">
+            <h3>Cineplanet San Miguel</h3>
+            <p>Av. La Marina 2000, San Miguel</p>
+            <button class="btn-trailer" style="width: 100%;">Ver cartelera local</button>
+        </div>
+        <div class="tarjeta-cine">
+            <h3>Cineplanet San Martín de Porres</h3>
+            <p>Av. Alfredo Mendiola, Centro Comercial</p>
+            <button class="btn-trailer" style="width: 100%;">Ver cartelera local</button>
+        </div>
+        <div class="tarjeta-cine">
+            <h3>Cineplanet Salaverry</h3>
+            <p>Av. Punta del Este 2400, Jesús María</p>
+            <button class="btn-trailer" style="width: 100%;">Ver cartelera local</button>
+        </div>
+    </div>
+</body>
+</html>

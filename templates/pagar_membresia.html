@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Pagar Membresía - Cineplanet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <style>
+        .pago-box { max-width: 520px; margin: 50px auto; background: #1a2a47; padding: 35px; border-radius: 16px; border: 1px solid rgba(255,213,0,0.3); }
+        .resumen-plan { background: #081225; padding: 18px; border-radius: 10px; margin: 20px 0; display: flex; justify-content: space-between; align-items: center; }
+        .campo-grupo { margin-bottom: 15px; }
+        .campo-grupo label { display: block; font-size: 13px; color: #a0a5b1; margin-bottom: 6px; }
+        .campo-grupo select, .campo-grupo input { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #2d3f63; background: #0b1528; color: #fff; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo" onclick="window.location.href='/'">cineplanet</div>
+        <button class="btn-login" onclick="window.location.href='{{ url_for('socio') }}'">← Volver a Planes</button>
+    </nav>
+
+    <div class="pago-box">
+        <span class="etiqueta-amarilla">CHECKOUT MEMBRESÍA</span>
+        <h2 style="margin-top: 12px; font-size: 26px;">Confirma tu suscripción</h2>
+
+        <div class="resumen-plan">
+            <div>
+                <div style="font-size: 12px; color: #a0a5b1;">PLAN SELECCIONADO</div>
+                <div style="font-size: 20px; font-weight: 800; color: {{ info.color }};">Socio {{ plan }}</div>
+            </div>
+            <div style="text-align: right;">
+                <div style="font-size: 12px; color: #a0a5b1;">TOTAL A PAGAR</div>
+                <div style="font-size: 24px; font-weight: 900; color: #ffd500;">S/ {{ "%.2f"|format(info.precio) }}</div>
+            </div>
+        </div>
+
+        <form method="POST" action="{{ url_for('pagar_membresia', plan=plan) }}">
+            <div class="campo-grupo">
+                <label>Método de Pago</label>
+                <select name="metodo" required>
+                    <option value="Yape">Yape</option>
+                    <option value="Plin">Plin</option>
+                    <option value="Tarjeta de Crédito / Débito">Tarjeta de Crédito / Débito</option>
+                </select>
+            </div>
+
+            <div class="campo-grupo">
+                <label>Tipo de Comprobante</label>
+                <select name="comprobante" required>
+                    <option value="Boleta Electrónica">Boleta Electrónica</option>
+                    <option value="Factura Electrónica">Factura Electrónica</option>
+                </select>
+            </div>
+
+            <div class="campo-grupo">
+                <label>DNI o RUC para el comprobante</label>
+                <input type="text" name="documento" placeholder="Ej. 74859612" required minlength="8" maxlength="11">
+            </div>
+
+            <button type="submit" class="btn-comprar" style="width: 100%; justify-content: center; margin-top: 10px;">
+                Confirmar Pago y Activar Socio {{ plan }} ➔
+            </button>
+        </form>
+    </div>
+</body>
+</html>

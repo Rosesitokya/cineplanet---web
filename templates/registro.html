@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Crear Cuenta - Cineplanet</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+</head>
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+
+    <form method="POST" action="/registro" style="background: #1a2a47; padding: 40px; border-radius: 12px; width: 100%; max-width: 400px; text-align: center;">
+        <h2 style="margin-bottom: 20px;">Crear Cuenta</h2>
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="alerta alerta-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+
+        <input type="text" name="nombre" placeholder="Nombre completo" required style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: none;">
+        <input type="email" name="correo" placeholder="Correo electrónico" required style="width: 100%; padding: 12px; margin-bottom: 15px; border-radius: 6px; border: none;">
+        <input type="password" name="contrasena" placeholder="Contraseña" required style="width: 100%; padding: 12px; margin-bottom: 20px; border-radius: 6px; border: none;">
+        
+        <button type="submit" style="background-color: #ffd500; color: #000; border: none; padding: 12px; border-radius: 6px; font-weight: bold; width: 100%; cursor: pointer;">Registrarse</button>
+        
+        <p style="margin-top: 20px; font-size: 14px; color: #a0a5b1;">
+            ¿Ya tienes una cuenta? <a href="{{ url_for('login') }}" style="color: #ffd500; text-decoration: none; font-weight: bold;">Inicia sesión</a>
+        </p>
+        <p style="margin-top: 10px; font-size: 13px;">
+            <a href="{{ url_for('inicio') }}" style="color: #a0a5b1; text-decoration: none;">← Volver a la cartelera</a>
+        </p>
+    </form>
+
+</body>
+</html>

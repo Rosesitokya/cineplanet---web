@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Cineplanet - Promociones y Dulcería</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='estilos.css') }}">
+    <style>
+        .grid-dulceria { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 25px; padding: 40px 50px; }
+        .item-dulceria { background: white; color: #081225; border-radius: 12px; overflow: hidden; text-align: center; }
+        .img-snack { height: 180px; background: #f0f0f0; display: flex; align-items: center; justify-content: center; font-size: 40px; }
+        .info-snack { padding: 20px; }
+        .precio { font-size: 24px; font-weight: bold; color: #1e3a76; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-left">
+            <div class="logo" onclick="window.location.href='/'">cineplanet</div>
+            <ul class="nav-links">
+                <li onclick="window.location.href='/'">Cartelera</li>
+                <li class="active" onclick="window.location.href='{{ url_for('cines') }}'">Cines</li>
+                <li onclick="window.location.href='{{ url_for('promociones') }}'">Promociones</li>
+                <li onclick="window.location.href='{{ url_for('socio') }}'">Socio Cineplanet</li>
+                <li onclick="window.location.href='{{ url_for('compra_grupal') }}'">Compra Grupal</li>
+            </ul>
+        </div>
+        <div class="nav-right">
+            <span class="ubicacion">Lima, Perú</span>
+            {% if 'id_cliente' in session %}
+                <button class="btn-comprar" style="padding: 8px 16px; font-size: 13px;" onclick="window.location.href='{{ url_for('perfil') }}'">
+                    👤 {{ session['nombre'].split()[0] }}
+                </button>
+                <button class="btn-registro" onclick="window.location.href='{{ url_for('logout') }}'">Salir</button>
+            {% else %}
+                <button class="btn-registro" onclick="window.location.href='{{ url_for('registro') }}'">Registrarse</button>
+                <button class="btn-login" onclick="window.location.href='{{ url_for('login') }}'">Iniciar sesión</button>
+            {% endif %}
+        </div>
+    </nav>
+
+    <h2 style="padding: 40px 50px 0; font-size: 32px;">Dulcería Online</h2>
+    
+    <div class="grid-dulceria">
+        <div class="item-dulceria">
+            <div class="img-snack">🍿</div>
+            <div class="info-snack">
+                <h3>Combo Clásico</h3>
+                <p style="font-size: 13px; color: #666;">Cancha gigante + 2 Bebidas</p>
+                <div class="precio">S/ 35.00</div>
+                <button class="btn-ver-funciones" onclick="window.location.href='{{ url_for('comprar') }}'">Agregar al pedido</button>
+            </div>
+        </div>
+        
+        <div class="item-dulceria">
+            <div class="img-snack">🍫</div>
+            <div class="info-snack">
+                <h3>Chocotejas</h3>
+                <p style="font-size: 13px; color: #666;">Caja artesanal: Pecanas y Guindones</p>
+                <div class="precio">S/ 12.50</div>
+                <button class="btn-ver-funciones" onclick="window.location.href='{{ url_for('comprar') }}'">Agregar al pedido</button>
+            </div>
+        </div>
+        
+        <div class="item-dulceria">
+            <div class="img-snack">🌭</div>
+            <div class="info-snack">
+                <h3>Combo Hot Dog</h3>
+                <p style="font-size: 13px; color: #666;">2 Hot dogs + 2 Bebidas grandes</p>
+                <div class="precio">S/ 42.00</div>
+                <button class="btn-ver-funciones" onclick="window.location.href='{{ url_for('comprar') }}'">Agregar al pedido</button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
